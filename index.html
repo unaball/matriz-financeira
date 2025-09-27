@@ -1,285 +1,44 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Matriz Financeira — 4 Semanas (Quadrantes)</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f5f5f5;
-  margin: 0; padding: 0;
-}
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 15px;
-  padding: 20px;
-}
-.card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,.1);
-  display: flex;
-  flex-direction: column;
-}
-.card h2, .card .period {
-  margin: 0 0 10px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-}
-.period {
-  border: 1px dashed #aaa;
-  padding: 4px;
-  cursor: text;
-}
-.saldos {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-.saldo-final.negative {
-  color: red;
-  font-weight: bold;
-}
-.table .row {
-  display: grid;
-  grid-template-columns: 1fr 90px 30px;
-  align-items: center;
-  margin-bottom: 4px;
-}
-.table .desc, .table .val {
-  padding: 4px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-button.del {
-  background: #f33;
-  border: none;
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.new-inputs {
-  display: flex; margin-top: 10px; gap: 4px;
-}
-.new-inputs input {
-  flex: 1;
-  padding: 4px;
-}
-.new-inputs button {
-  padding: 4px 6px;
-}
-</style>
-</head>
-<body>
-<div class="container">
-  <!-- Quadrante 1 -->
-  <div class="card" data-week="1">
-    <h2>Semana 1</h2>
-    <div class="period" contenteditable="true">Período da Semana 1</div>
-    <div class="saldos">
-      <div>Saldo Inicial: <span class="saldo-inicial">R$ 0,00</span></div>
-      <div>Saldo Final: <span class="saldo-final">R$ 0,00</span></div>
-    </div>
-    <div class="table"></div>
-    <div class="new-inputs">
-      <input type="text" class="new-desc" placeholder="Descrição" />
-      <input type="text" class="new-val" placeholder="Valor" />
-      <button class="save">Adicionar</button>
-      <button class="reset">Limpar</button>
-    </div>
-  </div>
-  <!-- Quadrante 2 -->
-  <div class="card" data-week="2">
-    <h2>Semana 2</h2>
-    <div class="period" contenteditable="true">Período da Semana 2</div>
-    <div class="saldos">
-      <div>Saldo Inicial: <span class="saldo-inicial">R$ 0,00</span></div>
-      <div>Saldo Final: <span class="saldo-final">R$ 0,00</span></div>
-    </div>
-    <div class="table"></div>
-    <div class="new-inputs">
-      <input type="text" class="new-desc" placeholder="Descrição" />
-      <input type="text" class="new-val" placeholder="Valor" />
-      <button class="save">Adicionar</button>
-      <button class="reset">Limpar</button>
-    </div>
-  </div>
-  <!-- Quadrante 3 -->
-  <div class="card" data-week="3">
-    <h2>Semana 3</h2>
-    <div class="period" contenteditable="true">Período da Semana 3</div>
-    <div class="saldos">
-      <div>Saldo Inicial: <span class="saldo-inicial">R$ 0,00</span></div>
-      <div>Saldo Final: <span class="saldo-final">R$ 0,00</span></div>
-    </div>
-    <div class="table"></div>
-    <div class="new-inputs">
-      <input type="text" class="new-desc" placeholder="Descrição" />
-      <input type="text" class="new-val" placeholder="Valor" />
-      <button class="save">Adicionar</button>
-      <button class="reset">Limpar</button>
-    </div>
-  </div>
-  <!-- Quadrante 4 -->
-  <div class="card" data-week="4">
-    <h2>Semana 4</h2>
-    <div class="period" contenteditable="true">Período da Semana 4</div>
-    <div class="saldos">
-      <div>Saldo Inicial: <span class="saldo-inicial">R$ 0,00</span></div>
-      <div>Saldo Final: <span class="saldo-final">R$ 0,00</span></div>
-    </div>
-    <div class="table"></div>
-    <div class="new-inputs">
-      <input type="text" class="new-desc" placeholder="Descrição" />
-      <input type="text" class="new-val" placeholder="Valor" />
-      <button class="save">Adicionar</button>
-      <button class="reset">Limpar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-(function(){
-  const fmt = v => {
-    if (isNaN(v) || v===null) return 'R$ 0,00';
-    return Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+saldoIniEl.style.cursor = 'pointer';
+saldoIniEl.title = 'Clique para editar saldo inicial';
+saldoIniEl.onclick = ()=>{
+  const entrada = prompt('Informe o saldo inicial (ex: 95.27 ou -400):', String(data.saldoInicial||0));
+  if (entrada !== null){
+    data.saldoInicial = parseNumber(entrada);
+    save();
+    renderAll();
   }
-  const parseNumber = s => {
-    if (s===undefined || s===null) return 0;
-    const t = String(s).trim();
-    if (t.length===0) return 0;
-    let cleaned = t.replace(/\s/g,'');
-    if (/^\(.*\)$/.test(cleaned)) cleaned = '-' + cleaned.replace(/[()]/g,'');
-    cleaned = cleaned.replace(/\.(?=\d{3})/g, '');
-    cleaned = cleaned.replace(/,/g, '.');
-    const n = parseFloat(cleaned);
-    return isNaN(n) ? 0 : n;
+}
+
+// Adiciona edição manual do saldo final
+saldoFinalEl.style.cursor = 'pointer';
+saldoFinalEl.title = 'Clique para editar saldo final';
+saldoFinalEl.onclick = ()=>{
+  const entrada = prompt('Informe o saldo final (ex: 95.27 ou -400):', String(Number(data.saldoInicial||0) + data.rows.reduce((sum,r)=>sum+Number(r.val||0),0)));
+  if (entrada !== null){
+    const finalEdit = parseNumber(entrada);
+    // Ajusta saldoInicial para que o saldo final fique como editado
+    const totalRows = data.rows.reduce((sum,r)=>sum+Number(r.val||0),0);
+    data.saldoInicial = finalEdit - totalRows;
+    save();
+    renderAll();
   }
-  function getStore(){ try { return JSON.parse(localStorage.getItem('matriz4')) || {}; } catch(e){ return {}; } }
-  function setStore(s){ localStorage.setItem('matriz4', JSON.stringify(s)); }
+}
 
-  function buildAll(){
-    document.querySelectorAll('.card').forEach(card=>build(card));
-  }
-
-  function build(card){
-    const week = parseInt(card.dataset.week);
-    const saldoIniEl = card.querySelector('.saldo-inicial');
-    const saldoFinalEl = card.querySelector('.saldo-final');
-    const periodEl = card.querySelector('.period');
-    const table = card.querySelector('.table');
-    const newDesc = card.querySelector('.new-desc');
-    const newVal = card.querySelector('.new-val');
-    const saveBtn = card.querySelector('.save');
-    const resetBtn = card.querySelector('.reset');
-
-    const store = getStore();
-    if (!store[week]) store[week] = { saldoInicial: 0, rows: [], period: periodEl.innerText };
-    const data = store[week];
-
-    periodEl.innerText = data.period || periodEl.innerText;
-
-    function save(){
-      const s = getStore();
-      s[week] = data;
-      setStore(s);
-      if(week>1) updateNextSaldoInicial(week-1);
-    }
-
-    periodEl.oninput = ()=>{
-      data.period = periodEl.innerText; save();
-    }
-
-    function updateNextSaldoInicial(prevWeek){
-      const s = getStore();
-      const prev = s[prevWeek];
-      if(!prev) return;
-      const totalPrev = prev.rows.reduce((sum,r)=>sum+Number(r.val||0),0);
-      const finalPrev = Number(prev.saldoInicial||0)+totalPrev;
-      const nextWeek = prevWeek+1;
-      if(s[nextWeek]){
-        if(nextWeek!==1){
-          s[nextWeek].saldoInicial = finalPrev;
-          setStore(s);
-        }
+// Ajuste em updateNextSaldoInicial para nunca sobrescrever semana 1
+function updateNextSaldoInicial(prevWeek){
+  const s = getStore();
+  const prev = s[prevWeek];
+  if(!prev) return;
+  const totalPrev = prev.rows.reduce((sum,r)=>sum+Number(r.val||0),0);
+  const finalPrev = Number(prev.saldoInicial||0)+totalPrev;
+  const nextWeek = prevWeek+1;
+  if(s[nextWeek]){
+    // só atualiza saldoInicial da semana seguinte se for diferente do que já está salvo, mas nunca mexe na semana 1
+    if(nextWeek!==1){
+      if (s[nextWeek].saldoInicial !== finalPrev) {
+        s[nextWeek].saldoInicial = finalPrev;
+        setStore(s);
       }
     }
-
-    function render(){
-      table.innerHTML = '';
-      data.rows.forEach((r,i)=>{
-        const row = document.createElement('div'); row.className='row';
-        const d = document.createElement('div'); d.className='desc'; d.contentEditable = true; d.innerText = r.desc || '';
-        const v = document.createElement('div'); v.className='val'; v.contentEditable = true; v.innerText = (Number(r.val)||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-        const del = document.createElement('button'); del.className='del'; del.textContent='✕'; del.title='Remover';
-        del.onclick = ()=>{ data.rows.splice(i,1); save(); renderAll(); }
-        d.oninput = ()=>{ data.rows[i].desc = d.innerText; save(); renderAll(); }
-        v.oninput = ()=>{
-          const parsed = parseNumber(v.innerText);
-          data.rows[i].val = parsed;
-          save();
-          setTimeout(()=>{ renderAll(); }, 500);
-        }
-        row.appendChild(d); row.appendChild(v); row.appendChild(del);
-        table.appendChild(row);
-      });
-      const total = data.rows.reduce((s,r)=>s + Number(r.val||0), 0);
-      const finalNum = Number(data.saldoInicial||0) + total;
-      saldoIniEl.innerText = fmt(Number(data.saldoInicial||0));
-      saldoFinalEl.innerText = fmt(finalNum);
-      if (finalNum < 0) saldoFinalEl.classList.add('negative'); else saldoFinalEl.classList.remove('negative');
-    }
-
-    saveBtn.onclick = ()=>{
-      const desc = (newDesc.value || '').trim() || 'Item';
-      const val = parseNumber(newVal.value || '0');
-      data.rows.push({ desc, val });
-      newDesc.value = '';
-      newVal.value = '';
-      save();
-      renderAll();
-    }
-    resetBtn.onclick = ()=>{
-      if (confirm('Limpar todos os dados desta semana?')){ data.rows = []; if(week===1){data.saldoInicial=0;} save(); renderAll(); }
-    }
-
-    saldoIniEl.style.cursor = 'pointer';
-    saldoIniEl.title = 'Clique para editar saldo inicial';
-    saldoIniEl.onclick = ()=>{
-      const entrada = prompt('Informe o saldo inicial (ex: 95.27 ou -400):', String(data.saldoInicial||0));
-      if (entrada !== null){
-        data.saldoInicial = parseNumber(entrada);
-        save();
-        renderAll();
-      }
-    }
-
-    render();
   }
-
-  function renderAll(){
-    document.querySelectorAll('.card').forEach(card=>{
-      const week = parseInt(card.dataset.week);
-      const store = getStore();
-      if(store[week]){
-        card.querySelector('.saldo-inicial').innerText = fmt(store[week].saldoInicial);
-        const total = store[week].rows.reduce((sum,r)=>sum+Number(r.val||0),0);
-        const finalNum = Number(store[week].saldoInicial||0)+total;
-        const saldoFinalEl = card.querySelector('.saldo-final');
-        saldoFinalEl.innerText = fmt(finalNum);
-        if(finalNum<0) saldoFinalEl.classList.add('negative'); else saldoFinalEl.classList.remove('negative');
-      }
-    });
-  }
-
-  buildAll();
-  renderAll();
-})();
-</script>
-</body>
-</html>
+}
